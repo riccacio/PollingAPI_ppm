@@ -1,2 +1,2 @@
-# ppm_django
+# PollingAPI_ppm
 University project for the Multimedia Production and Design course
