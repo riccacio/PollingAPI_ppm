@@ -3,6 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
+from django.contrib import messages
+
 
 from .forms import PollForm, QuestionForm
 from .models import Poll
@@ -22,6 +24,23 @@ class PollResultsView (generics.RetrieveAPIView):
     serializer_class = PollSerializer
     permission_classes = [IsAuthenticated]
 
+
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Invalid username or password.')
+            return redirect('login')
+    else:
+        return render(request, 'login.html')
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -33,7 +52,10 @@ def register(request):
             if user is not None:
                 login(request, user)
                 return redirect('dashboard')
-
+            else:
+                messages.error(request, 'Invalid username or password.')
+        else:
+            messages.error(request, 'Invalid form data.')
     else:
         form = UserCreationForm()
         return render(request, 'register.html', {'form':form})

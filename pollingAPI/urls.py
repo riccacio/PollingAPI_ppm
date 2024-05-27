@@ -20,7 +20,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from pollingAPI_app.views import *
 
 urlpatterns = [
-    path('', LoginView.as_view(template_name ='login.html'), name='login'),
+    path('', login_view, name='login'),
 
     path('pollingAPI/', PollCreateView.as_view(), name='create_poll'),
     path('pollingAPI/<int:poll_id>/responses/', ResponseCreateView.as_view(), name='submit_response'),
@@ -29,6 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
 
+    path('login/', login_view, name='login'),
     path('register/', register, name='register'),
     path('dashboard/', dashboard, name='dashboard'),
     path('login/', LoginView.as_view(template_name ='login.html'), name='login'),
