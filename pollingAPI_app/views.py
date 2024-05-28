@@ -1,6 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -9,6 +9,15 @@ from django.contrib import messages
 from .forms import PollForm, QuestionForm
 from .models import Poll
 from pollingAPI_app.serializers import *
+
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, 'Your account has been deleted.')
+        return redirect('login')
+
 class PollCreateView (generics.CreateAPIView):
     queryset = Poll.objects.all()
     serializer_class = PollSerializer
@@ -41,24 +50,28 @@ def login_view(request):
     else:
         return render(request, 'login.html')
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(request=request, username=username, password=raw_password)
-            if user is not None:
-                login(request, user)
-                return redirect('dashboard')
-            else:
-                messages.error(request, 'Invalid username or password.')
+            form.save()
+            messages.success(request, 'Account created successfully.')
+            return redirect('login')
         else:
-            messages.error(request, 'Invalid form data.')
+            messages.error(request, 'There was an error creating your account.')
+            return redirect('login')
     else:
         form = UserCreationForm()
-        return render(request, 'register.html', {'form':form})
+
+    return render(request, 'register.html', {'form': form})
 
 def dashboard(request):
     return render(request, 'dashboard.html')
