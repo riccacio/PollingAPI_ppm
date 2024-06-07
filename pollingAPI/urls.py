@@ -16,14 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LogoutView
 from pollingAPI_app.views import *
 
 
 urlpatterns = [
     path('', login_view, name='login'),
 
-    path('pollingAPI/', PollCreateView.as_view(), name='create_poll'),
+    path('create_poll/', create_poll, name='create_poll'),
     path('pollingAPI/<int:poll_id>/responses/', ResponseCreateView.as_view(), name='submit_response'),
     path('pollingAPI/<int:poll_id>/results/', PollResultsView.as_view(), name='poll_results'),
 
@@ -33,7 +33,6 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('register/', register, name='register'),
     path('dashboard/', dashboard, name='dashboard'),
-    path('logout/', LogoutView.as_view(), name='logout'),
     path('delete_account/', delete_account, name='delete_account'),
 ]
 

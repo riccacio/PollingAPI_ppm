@@ -2,12 +2,11 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
-
 from .forms import PollForm, QuestionForm
-from .models import Poll
+from .models import Poll, Question
 from pollingAPI_app.serializers import *
 
 def delete_account(request):
@@ -33,9 +32,6 @@ class PollResultsView (generics.RetrieveAPIView):
     serializer_class = PollSerializer
     permission_classes = [IsAuthenticated]
 
-
-
-
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -49,14 +45,6 @@ def login_view(request):
             return redirect('login')
     else:
         return render(request, 'login.html')
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib import messages
-
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-from django.contrib import messages
 
 def register(request):
     if request.method == 'POST':
@@ -75,3 +63,40 @@ def register(request):
 
 def dashboard(request):
     return render(request, 'dashboard.html')
+
+
+
+def polls_list(request):
+    polls = Poll.objects.all()
+    return render(request, 'polls_list.html', {'polls': polls})
+
+
+# TODO sistemare il passaggio dei dati dal form al database
+def create_poll(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        options = request.POST.getlist('options')
+
+        poll = Poll(title=title, user=request.user)
+        poll.save()
+
+        for option in options:
+            question = Question(text=option, poll=poll)
+            question.save()
+
+        return redirect('dashboard')
+
+    return render(request, 'create_poll.html')
+def edit_poll(request, poll_id):
+    poll = get_object_or_404(Poll, id=poll_id)
+    if request.user != poll.created_by:
+        return redirect('polls_list')
+
+    if request.method == 'POST':
+        form = PollForm(request.POST, instance=poll)
+        if form.is_valid():
+            form.save()
+            return redirect('polls_list')
+    else:
+        form = PollForm(instance=poll)
+    return render(request, 'edit_poll.html', {'form': form})
