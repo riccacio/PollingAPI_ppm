@@ -61,9 +61,11 @@ def register(request):
 
     return render(request, 'register.html', {'form': form})
 
-def dashboard(request):
-    return render(request, 'dashboard.html')
 
+def dashboard(request):
+    polls = Poll.objects.all()
+    questions = Question.objects.all()
+    return render(request, 'dashboard.html', {'polls': polls, 'questions': questions})
 
 
 def polls_list(request):
@@ -71,7 +73,6 @@ def polls_list(request):
     return render(request, 'polls_list.html', {'polls': polls})
 
 
-# TODO sistemare il passaggio dei dati dal form al database
 def create_poll(request):
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -87,6 +88,14 @@ def create_poll(request):
         return redirect('dashboard')
 
     return render(request, 'create_poll.html')
+
+
+def delete_poll(request, poll_id):
+    poll = get_object_or_404(Poll, id=poll_id)
+    if request.user == poll.user:
+        poll.delete()
+    return redirect('dashboard')
+
 def edit_poll(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
     if request.user != poll.created_by:

@@ -11,7 +11,7 @@
 <body>
 <nav class="navbar navbar-expand-lg bg-black">
     <div class="container-fluid">
-        <h2 class="navbar-brand text-white m-0">Create</h2>
+        <h2 class="navbar-brand text-white m-0">Dashboard</h2>
         <div class="d-flex">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
@@ -36,7 +36,6 @@
     </div>
 </nav>
 <div class="container mt-2 w-50">
-    <!-- TODO sistemare il passaggio dei dati dal form al database -->
     <div class="border border-dark border-2 rounded-2 p-2">
         <h3>Create a new poll</h3>
         <form method="POST" action="{% url 'create_poll' %}">
@@ -44,19 +43,19 @@
 
               <div class="mb-3">
                     <label class="form-label" for="title">Title</label>
-                    <input type="text" class="form-control" id="title">
+                    <input type="text" class="form-control" id="title" name="title" required>
                     <div id="emailHelp" class="form-text">Max 100 characters</div>
               </div>
             <label class="form-label">Options:</label>
             <div id="options">
                 <div class="mb-3 w-25">
-                    <input type="text" class="form-control" id="option">
+                    <input type="text" class="form-control" id="option" name="options" required>
                 </div>
             </div>
             <script>
                 $(document).ready(function() {
                     $('#add-option').click(function() {
-                        var newOption = $('<div class="mb-3 w-25"><input type="text" class="form-control" id="option"></div>');
+                        var newOption = $('<div class="mb-3 w-25"><input type="text" class="form-control" id="option" name="options" required></div>');
                         $('#options').append(newOption);
                     });
 
@@ -77,7 +76,6 @@
     </div>
 
 </div>
-
 
 
 </body>

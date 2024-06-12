@@ -20,7 +20,7 @@
                     <a class="nav-link dropdown-toggle text-white" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Account
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="{% url 'login' %}">Logout</a></li>
                         <li>
                             <form method="POST" action="{% url 'delete_account' %}">
@@ -37,15 +37,43 @@
 
 <div>
 
-
-        <button type="button" class="btn btn-dark m-2 " style="cursor: pointer;" >
-            <a  class="text-white link-underline link-underline-opacity-0" href="{% url 'create_poll' %}">
-                Create Poll
-            </a>
-        </button>
-
+    <button type="button" class="btn btn-dark m-2 " >
+        <a  class="text-white link-underline link-underline-opacity-0" href="{% url 'create_poll' %}">
+            Create Poll
+        </a>
+    </button>
 
 
+    {% for poll in polls %}
+        <div class="border border-dark m-2 p-2 bg-primary bg-opacity-25">
+        <div class="d-flex justify-content-between">
+            <h2>{{ poll.title }}</h2>
+            {% if user == poll.user %}
+                <div>
+                    <form method="POST" action="{% url 'delete_poll' poll.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn border-2 border-danger text-danger fw-bold">Delete Poll</button>
+                        <button type="button" class="btn border-2 border-dark text-dark fw-bold">Edit Poll</button>
+                    </form>
+                </div>
+                {% endif %}
+        </div>
+            <div>
+                {% for option in questions %}
+                    {% if option.poll == poll %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="{{ option.poll }}">
+                            <label class="form-check-label">
+                                {{ option.text }}
+                            </label>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <p class="mt-3 mb-0 fs-6 fw-lighter">Created at {{ poll.created_at }} by {{ poll.user }}</p>
+        </div>
+    {% endfor %}
 
 </div>
 

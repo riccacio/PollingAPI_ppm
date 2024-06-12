@@ -34,6 +34,7 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('dashboard/', dashboard, name='dashboard'),
     path('delete_account/', delete_account, name='delete_account'),
+    path('delete_poll/<int:poll_id>/', delete_poll, name='delete_poll'),
 ]
 
 
