@@ -5,11 +5,11 @@ from .models import *
 class PollForm(forms.ModelForm):
     class Meta:
         model = Poll
-        fields = ['title']
+        fields = ['question']
 
-class QuestionForm(forms.ModelForm):
+class ChoiceForm(forms.ModelForm):
     class Meta:
-        model = Question
+        model = Choice
         fields = ['text']
 
-QuestionFormSet = inLineFormSetFactory(Poll, Question, form=QuestionForm, extra=2, can_delete=True)
+ChoiceFormSet = inLineFormSetFactory(Poll, Choice, form=ChoiceForm, extra=2, can_delete=True)

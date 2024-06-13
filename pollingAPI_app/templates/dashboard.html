@@ -36,30 +36,32 @@
 </nav>
 
 <div>
-
+<div>
     <button type="button" class="btn btn-dark m-2 " >
         <a  class="text-white link-underline link-underline-opacity-0" href="{% url 'create_poll' %}">
             Create Poll
         </a>
     </button>
-
-
+    <!-- TODO da modificare e far vedere le risposte in una nuova pagina-->
+    <button type="button" class="btn btn-dark m-2 " >
+        <a  class="text-white link-underline link-underline-opacity-0" href="{% url 'create_poll' %}">
+            View Responses
+        </a>
+    </button>
+</div>
     {% for poll in polls %}
-        <div class="border border-dark m-2 p-2 bg-primary bg-opacity-25">
+        <div class="border border-3 border-primary m-2 p-2 bg-primary bg-opacity-25 rounded-2">
         <div class="d-flex justify-content-between">
-            <h2>{{ poll.title }}</h2>
+            <h2>{{ poll.question }}</h2>
             {% if user == poll.user %}
-                <div>
-                    <form method="POST" action="{% url 'delete_poll' poll.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn border-2 border-danger text-danger fw-bold">Delete Poll</button>
-                        <button type="button" class="btn border-2 border-dark text-dark fw-bold">Edit Poll</button>
-                    </form>
-                </div>
-                {% endif %}
+                <form method="POST" action="{% url 'delete_poll' poll.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn border-2 border-danger text-danger fw-bold">Delete Poll</button>
+                </form>
+            {% endif %}
         </div>
             <div>
-                {% for option in questions %}
+                {% for option in choices%}
                     {% if option.poll == poll %}
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="{{ option.poll }}">
@@ -76,7 +78,5 @@
     {% endfor %}
 
 </div>
-
-
 </body>
 </html>
