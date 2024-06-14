@@ -1,30 +1,9 @@
-"""
-URL configuration for pollingAPI project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
 from pollingAPI_app.views import *
 
-
 urlpatterns = [
     path('', login_view, name='login'),
-
-    path('create_poll/', create_poll, name='create_poll'),
-    path('pollingAPI/<int:poll_id>/responses/', ResponseCreateView.as_view(), name='submit_response'),
-    path('pollingAPI/<int:poll_id>/results/', PollResultsView.as_view(), name='poll_results'),
 
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
@@ -32,8 +11,9 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('register/', register, name='register'),
     path('dashboard/', dashboard, name='dashboard'),
+    path('create_poll/', create_poll, name='create_poll'),
     path('delete_account/', delete_account, name='delete_account'),
     path('delete_poll/<int:poll_id>/', delete_poll, name='delete_poll'),
+
+    path('poll/<int:poll_id>/submit_response/', submit_response, name='submit_response'),
 ]
-
-

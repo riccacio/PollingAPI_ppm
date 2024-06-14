@@ -1,36 +1,9 @@
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-
-from .forms import PollForm, ChoiceForm
-from .models import Poll, Choice
 from pollingAPI_app.serializers import *
 
-def delete_account(request):
-    if request.method == 'POST':
-        user = request.user
-        logout(request)
-        user.delete()
-        messages.success(request, 'Your account has been deleted.')
-        return redirect('login')
-
-class PollCreateView (generics.CreateAPIView):
-    queryset = Poll.objects.all()
-    serializer_class = PollSerializer
-    permission_classes = [IsAuthenticated]
-
-class ResponseCreateView (generics.CreateAPIView):
-    queryset = Response.objects.all()
-    serializer_class = ResponseSerializer
-    permission_classes = [IsAuthenticated]
-
-class PollResultsView (generics.RetrieveAPIView):
-    queryset = Poll.objects.all()
-    serializer_class = PollSerializer
-    permission_classes = [IsAuthenticated]
 
 def login_view(request):
     if request.method == 'POST':
@@ -62,16 +35,19 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, 'Your account has been deleted.')
+        return redirect('login')
+
+
 def dashboard(request):
-    polls = Poll.objects.all()
+    polls = Poll.objects.all().order_by('-created_at')
     choices = Choice.objects.all()
     return render(request, 'dashboard.html', {'polls': polls, 'choices': choices})
-
-
-def polls_list(request):
-    polls = Poll.objects.all()
-    return render(request, 'polls_list.html', {'polls': polls})
-
 
 def create_poll(request):
     if request.method == 'POST':
@@ -83,16 +59,29 @@ def create_poll(request):
 
         for option in options:
             choice = Choice(text=option, poll=poll)
-            
             choice.save()
 
         return redirect('dashboard')
 
     return render(request, 'create_poll.html')
 
-
 def delete_poll(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
     if request.user == poll.user:
         poll.delete()
+    return redirect('dashboard')
+
+def submit_response(request, poll_id):
+    if request.method == 'POST':
+        choice_id = request.POST.get('choice')
+
+        poll = get_object_or_404(Poll, id=poll_id)
+        choice = get_object_or_404(Choice, id=choice_id, poll=poll)
+
+        choice.votes += 1
+        choice.save()
+
+        poll.users_voted.add(request.user)
+        poll.save()
+
     return redirect('dashboard')
