@@ -43,7 +43,6 @@ def delete_account(request):
         messages.success(request, 'Your account has been deleted.')
         return redirect('login')
 
-
 def dashboard(request):
     polls = Poll.objects.all().order_by('-created_at')
     choices = Choice.objects.all()
