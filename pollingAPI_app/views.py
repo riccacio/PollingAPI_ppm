@@ -45,8 +45,6 @@ def delete_account(request):
         return redirect('login')
 
 def dashboard(request):
-    if request.user.is_authenticated:
-        return redirect('login')
     polls = Poll.objects.all().order_by('-created_at')
     choices = Choice.objects.all()
     return render(request, 'dashboard.html', {'polls': polls, 'choices': choices})
