@@ -1,7 +1,7 @@
 # Polling APP 
 
 Questo è progetto universitario per il corso di Progettazione e Produzione Multimediale. 
-E' un'applicazione web per la creazione e la gestione di sondaggi, sviluppato in Python utilizzando Django.
+È un'applicazione web per la creazione e la gestione di sondaggi, sviluppato in Python utilizzando Django.
 
 ## Funzionalità
 
