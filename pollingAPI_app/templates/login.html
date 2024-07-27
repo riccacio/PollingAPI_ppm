@@ -36,6 +36,13 @@
                                 </div>
                                     <button class="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
                             </form>
+                            {% if messages %}
+                                <ul>
+                                    {% for message in messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                             <div>
                                 <p class="mb-0">Don't have an account? <a href="{% url 'register' %}" class="text-white-50 fw-bold">Sign Up</a>
                                 </p>
