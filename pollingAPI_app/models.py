@@ -6,7 +6,7 @@ class Poll(models.Model):
     question = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    users_voted = models.ManyToManyField(User, related_name='polls_voted')
+    users_voted = models.ManyToManyField(User, related_name='polls_voted', blank=True, null=True)
 
     def __str__(self):
         return self.question
