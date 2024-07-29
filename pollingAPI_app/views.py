@@ -22,10 +22,10 @@ def login_view(request):
                 login(request, user)
                 return redirect('dashboard')
         else:
-            return render(request, 'Login.html', {'form': form})
+            return render(request, 'login.html', {'form': form})
     else:
         form = AuthenticationForm()
-        return render(request, 'Login.html', {'form': form})
+        return render(request, 'login.html', {'form': form})
 
 def register(request):
     if request.method == 'POST':
