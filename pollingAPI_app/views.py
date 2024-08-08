@@ -1,14 +1,20 @@
 from django.contrib.auth import login, authenticate, logout as auth_logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import  permission_classes
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.views import APIView
 from pollingAPI_app.models import Poll, Choice
 from pollingAPI_app.serializers import PollSerializer, ChoiceSerializer
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
 
+
+
+#TODO: elimina le viste login e register, utilizza solo le viste API
 
 # HTML Views
 def login_view(request):
@@ -101,18 +107,19 @@ class CreatePoll(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-
+@permission_classes([IsAuthenticated])
 class PollList(generics.ListAPIView):
     queryset = Poll.objects.all()
     serializer_class = PollSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+@permission_classes([IsAuthenticated])
 class PollDetailView(generics.RetrieveAPIView):
     queryset = Poll.objects.all()
     serializer_class = PollSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-
+@permission_classes([IsAuthenticated])
 class CreateChoice(generics.CreateAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
@@ -121,7 +128,7 @@ class CreateChoice(generics.CreateAPIView):
         poll = get_object_or_404(Poll, id=self.kwargs.get('poll_id'))
         serializer.save(poll=poll)
 
-
+@permission_classes([IsAuthenticated])
 class ChoiceList(generics.ListAPIView):
     serializer_class = ChoiceSerializer
 
@@ -130,7 +137,7 @@ class ChoiceList(generics.ListAPIView):
         get_object_or_404(Poll, id=poll_id)
         return Choice.objects.filter(poll__id=poll_id)
 
-
+@permission_classes([IsAuthenticated])
 class VoteView(APIView):
     def post(self, request, poll_id, choice_id):
         poll = get_object_or_404(Poll, id=poll_id)
@@ -140,3 +147,24 @@ class VoteView(APIView):
         poll.users_voted.add(request.user);
         poll.save()
         return Response({'message': 'Vote submitted successfully'}, status=status.HTTP_200_OK)
+
+
+
+
+#TODO: elimina questi comandi
+
+
+
+
+# http GET http://127.0.0.1:8000/api/polls/ "Authorization: Bearer {eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIzMTI4NzQ1LCJpYXQiOjE3MjMxMjg0NDUsImp0aSI6ImU1ZDZmNGY3OGMwMjQ0OTlhMmQ2MDFmZTg5OWYyYTdjIiwidXNlcl9pZCI6MTd9.Hd3W2g7qqifmeMGJ30suyaW3JuYH-5Zp2-QsQp9i-5w} "
+
+
+# http http://127.0.0.1:8000/api/auth/token/ username="Francesco" password="Pacini2002/"
+
+#http http://127.0.0.1:8000/api/polls/ "Authorization: Bearer '"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIzMTMwMjgyLCJpYXQiOjE3MjMxMjk5ODIsImp0aSI6IjI5ZmIzZWEyNWNhNjQ4MzY4YTMzZmY0N2Y1OWQyOTA5IiwidXNlcl9pZCI6MTd9.q9A4stZmTHCRJfFThJF8pMqUC0WvL56womBnMz-SC7M"' "
+#http http://127.0.0.1:8000/api/polls/19/choices/ "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIzMTMwODkyLCJpYXQiOjE3MjMxMzA1OTIsImp0aSI6IjFmMDQzOWRlYjBiZjQ5NTZhNjQxYWNkMTJmZDY5NTU1IiwidXNlcl9pZCI6MTB9.sjvf5jJWnpHVJ-1gxq9WhAziGTjzujFlO_EEz_y17nA
+
+
+
+#eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIzMTMwODkyLCJpYXQiOjE3MjMxMzA1OTIsImp0aSI6IjFmMDQzOWRlYjBiZjQ5NTZhNjQxYWNkMTJmZDY5NTU1IiwidXNlcl9pZCI6MTB9.sjvf5jJWnpHVJ-1gxq9WhAziGTjzujFlO_EEz_y17nA
+# http GET http://127.0.0.1:8000/api/polls/ "Authorization: Bearer your_token"

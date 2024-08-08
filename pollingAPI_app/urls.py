@@ -2,6 +2,9 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+
+    #TODO: elimina l'interfaccia login e register, utilizza solo l'interfaccia API
+
     # HTML views
     path('', login_view, name='login'),
     path('login/', login_view, name='login'),
