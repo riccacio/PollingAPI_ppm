@@ -3,9 +3,8 @@ from .views import *
 
 urlpatterns = [
 
-    #TODO: elimina l'interfaccia login e register, utilizza solo l'interfaccia API
-
     # HTML views
+    path('', login_view, name='login'),
     path('login/', login_view, name='login'),
     path('logout/', logout, name='logout'),
     path('register/', register, name='register'),
@@ -16,7 +15,6 @@ urlpatterns = [
     path('submit_response/<int:poll_id>/', submit_response, name='submit_response'),
 
     # API views
-    path('', PollList.as_view(), name='login'),
     path('api/createPoll/', CreatePoll.as_view(), name='create-poll'),
     path('api/polls/', PollList.as_view(), name='api-polls-list'),
     path('api/polls/<int:pk>/', RetrieveUpdateDestroyPollAPIView.as_view(), name='api-poll_detail'),
