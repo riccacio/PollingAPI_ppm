@@ -2,11 +2,14 @@ from django.contrib.auth import login, authenticate, logout as auth_logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from rest_framework import generics, permissions
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import  permission_classes
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from pollingAPI_app.models import Poll, Choice
 from pollingAPI_app.serializers import PollSerializer, ChoiceSerializer
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -100,12 +103,17 @@ def logout(request):
 
 
 # API Views
+
+
 class CreatePoll(generics.CreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Poll.objects.all()
     serializer_class = PollSerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
 @permission_classes([IsAuthenticated])
 class PollList(generics.ListAPIView):
@@ -113,13 +121,30 @@ class PollList(generics.ListAPIView):
     serializer_class = PollSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-@permission_classes([IsAuthenticated])
-class PollDetailView(generics.RetrieveAPIView):
-    queryset = Poll.objects.all()
-    serializer_class = PollSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+class RetrieveUpdateDestroyPollAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = PollSerializer
+    queryset = Poll.objects.all()
+    permission_classes = [IsAuthenticated]
+
+@api_view(['GET', 'DELETE'])
 @permission_classes([IsAuthenticated])
+def poll_detail(request, pk):
+    try:
+        poll = Poll.objects.get(pk=pk)
+    except Poll.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = PollSerializer
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        poll.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 class CreateChoice(generics.CreateAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
@@ -137,7 +162,7 @@ class ChoiceList(generics.ListAPIView):
         get_object_or_404(Poll, id=poll_id)
         return Choice.objects.filter(poll__id=poll_id)
 
-@permission_classes([IsAuthenticated])
+
 class VoteView(APIView):
     def post(self, request, poll_id, choice_id):
         poll = get_object_or_404(Poll, id=poll_id)
